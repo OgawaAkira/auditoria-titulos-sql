@@ -1,0 +1,16 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: docker compose up -d
+      - name: Esperar o carregamento do banco
+        run: |
+          until [ "$(docker compose exec -T db psql -U auditor -d titulos -tAc 'SELECT COUNT(*) FROM movimentacao_bancaria' 2>/dev/null)" = "11" ]; do sleep 2; done
+      - run: pip install -r requirements.txt
+      - run: pytest -q
