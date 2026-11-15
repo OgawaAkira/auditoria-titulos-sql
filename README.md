@@ -23,6 +23,10 @@ Laboratório de auditoria de dados em PostgreSQL, baseado em um estudo de caso d
 
 A3 também acusa o título 4, mas são pagamentos parciais legítimos (600 de 800). Alerta não é achado até ser confirmado por outra consulta.
 
-## Modelo alternativo
+## Modelo alternativo (v2)
 
-Veja a próxima seção, a ser preenchida com o modelo v2.
+O legado liga cada movimentação a um único título. O esquema v2 resolve a relação N:N com a entidade associativa baixa_titulo, que guarda o valor alocado a cada título.
+
+- O id_pessoa repetido nas chaves compostas garante, no próprio banco, que uma movimentação só quita títulos da mesma pessoa.
+- Uma constraint trigger adiada confere, no COMMIT, que a soma das baixas é igual ao valor da movimentação.
+- Os testes em tests/test_v2.py provam as duas regras.
